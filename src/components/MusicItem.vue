@@ -44,6 +44,16 @@ const props = defineProps({
     box-sizing: border-box;
     padding: 10px;
 }
+@media screen and (min-width: 1366px) {
+    .music-item {
+        width: calc(30% - 20px);
+    }
+}
+@media screen and (min-width: 1920px) {
+    .music-item {
+        width: calc(25% - 20px);
+    }
+}
 .music-item .cover{
     display: block;
     width: 187px;
@@ -68,9 +78,38 @@ const props = defineProps({
 }
 .difficulties .difficulty {
     width: 150px;
-    border: 1px solid red;
     padding: 5px 0;
     border-radius: 4px;
+    font-weight: bold;
+    color: white;
+}
+.difficulties .difficulty.MXM {
+    background: rgba(172,172,172,0.6);
+    border: 1px solid #acacac;
+}
+.difficulties .difficulty.EXH {
+    background-color: rgba(251,73,76,0.6);
+    border: 1px solid #fb494c;
+}
+.difficulties .difficulty.ADV {
+    background-color: rgba(251,182,73,0.6);
+    border: 1px solid #fbb649;
+}
+.difficulties .difficulty.NOV {
+    background-color: rgba(90,73,251,0.6);
+    border: 1px solid #5a49fb;
+}
+.difficulties .difficulty.GRV {
+    background-color: rgba(251,143,73,0.6);
+    border: 1px solid #fb8f49;
+}
+.difficulties .difficulty.HVN {
+    background-color: rgba(73,201,251,0.6);
+    border: 1px solid #49c9fb;
+}
+.difficulties .difficulty.VVD {
+    background-color: rgba(255,89,205,0.6);
+    border: 1px solid #ff59cd;
 }
 .music-item .categorys {
     display: flex;

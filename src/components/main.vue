@@ -3,7 +3,9 @@
     <div class="search-bar">
         <input type="text" v-model="keyword" @input="changeHandle" placeholder="keyword...">
     </div>
-    <MusicItem v-for="(item, index) in results" :key="index" :data="item"/>
+    <div class="musics">
+        <MusicItem v-for="(item, index) in results" :key="index" :data="item"/>
+    </div>
 </template>
 <script setup lang="ts">
 import MusicItem from './MusicItem.vue';
@@ -24,7 +26,7 @@ const changeHandle = () => {
     clearTimeout(timer);
     timer = setTimeout(() => {
         if(!keyword.value.trim()) {
-            results.value = musics;
+            results.value = musics.slice(0, 200);
         }
         else {
             results.value = fuse.search(keyword.value).map(x => x.item);
@@ -46,5 +48,9 @@ const changeHandle = () => {
     padding: 5px;
     width: 90%;
     box-sizing: border-box;
+}
+.musics {
+    display: flex;
+    flex-wrap: wrap;
 }
 </style>

@@ -5,6 +5,7 @@ interface IMusicDifficulty {
 }
 
 interface IMusicItem {
+    id: string;
     name: string;
     artist: string;
     difficulties: IMusicDifficulty[];

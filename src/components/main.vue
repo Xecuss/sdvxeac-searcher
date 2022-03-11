@@ -12,7 +12,7 @@
         </div>
     </div>
     <div class="musics">
-        <MusicItem v-for="(item, index) in results" :key="index" :data="item"/>
+        <MusicItem v-for="item in results" :key="item.id" :data="item"/>
     </div>
 </template>
 <script setup lang="ts">

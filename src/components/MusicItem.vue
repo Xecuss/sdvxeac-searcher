@@ -1,26 +1,32 @@
 <template>
 <div class="music-item">
-    <img class="cover" v-lazy="`https://p.eagate.573.jp/${data.cover}`" />
-    <h3 class="name">{{ data.name }}</h3>
-    <p class="artist">{{data.artist}}</p>
-    <div class="difficulties">
-        <div 
-            v-for="difficulty in data.difficulties" 
-            :key="difficulty.id" 
-            class="difficulty"
-            :class="difficulty.name"
-        >
-            {{difficulty.name}} {{ difficulty.level }}
+    <div class="content">
+        <img class="cover" v-lazy="`https://p.eagate.573.jp/${data.cover}`" />
+        <h3 class="name">{{ data.name }}</h3>
+        <p class="artist">{{data.artist}}</p>
+        <div class="difficulties">
+            <div 
+                v-for="difficulty in data.difficulties" 
+                :key="difficulty.id" 
+                class="difficulty"
+                :class="difficulty.name"
+            >
+                {{difficulty.name}} {{ difficulty.level }}
+            </div>
+        </div>
+        <p class="package">{{data.pacakge}}</p>
+        <div class="categorys">
+            <div 
+                v-for="cate in data.category" 
+                :key="cate" 
+                class="category"
+                :class="cate"
+            >{{cate}}</div>
         </div>
     </div>
-    <p class="package">{{data.pacakge}}</p>
-    <div class="categorys">
-        <div 
-            v-for="cate in data.category" 
-            :key="cate" 
-            class="category"
-            :class="cate"
-        >{{cate}}</div>
+    <div class="btn-group">
+        <button class="select" @click.stop="selectMusic">Select</button>
+        <button class="copy">Copy</button>
     </div>
 </div>
 </template>
@@ -33,6 +39,13 @@ const props = defineProps({
         required: true
     }
 });
+const emit = defineEmits<{
+    (e: 'select', value: IMusicItem): void
+}>();
+
+const selectMusic = () => {
+    emit('select', props.data)
+};
 </script>
 <style scoped>
 .music-item {
@@ -41,8 +54,15 @@ const props = defineProps({
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 30px;
     box-sizing: border-box;
+}
+.music-item .content {
+    width: 100%;
     padding: 10px;
+    box-sizing: border-box;
 }
 @media screen and (min-width: 1366px) {
     .music-item {
@@ -121,5 +141,25 @@ const props = defineProps({
     border: 1px solid blue;
     padding: 5px 0;
     border-radius: 4px;
+}
+.music-item .btn-group {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+}
+.music-item .btn-group button{
+    display: block;
+    flex-grow: 1;
+    border: none;
+    line-height: 30px;
+    font-size: 14px;
+    width: 0;
+}
+button.select {
+    background-color: #fb494c;
+}
+button.copy {
+    background-color: #49c9fb;
 }
 </style>

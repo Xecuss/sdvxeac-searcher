@@ -1,14 +1,16 @@
 <template>
     <h1>コナステ版 SDVXEG 乐曲検索</h1>
+    <Panel  v-model:show="filterOpen">
+        <div class="filter-list">
+            <label class="package" v-for="pack in packages" :class="{ active: selectedPack.indexOf(pack) !== -1 }">
+                <input class="checkbox" type="checkbox" v-model="selectedPack" :value="pack" @input="changeHandle"> {{simpleDisplayPipe(pack)}}
+            </label>
+        </div>
+    </Panel>
     <div class="search-bar">
         <input type="text" v-model="keyword" @input="changeHandle" placeholder="keyword..." class="keyword">
         <div class="setting-row">
-            <span class="filter" @click="filterOpen = !filterOpen">filter</span>
-        </div>
-        <div class="filter-list" v-show="filterOpen">
-            <label class="package" v-for="pack in packages">
-                <input type="checkbox" v-model="selectedPack" :value="pack" @input="changeHandle"> {{pack}}
-            </label>
+            <span class="filter" @click="filterOpen = true">filter</span>
         </div>
     </div>
     <div class="musics">
@@ -20,14 +22,14 @@ import MusicItem from './MusicItem.vue';
 import MusicDB from '../data/music_db.json';
 import Fuse from 'fuse.js';
 import { computed, Ref, ref } from 'vue';
+import Panel from './panel.vue';
+import { sortPackages } from '../lib/utils';
 
 let keyword = ref('');
 const musics: IMusicItem[] = MusicDB.data;
 let results = ref(musics);
 // 取出目录，去重并排序
-const packages = [...new Set(musics.map(music => music.pacakge))].sort((x, y) => x.localeCompare(y, 'ja', {
-    numeric: true
-}));
+const packages = sortPackages([...new Set(musics.map(music => music.pacakge))]);
 const selectedPack: Ref<string[]> = ref([]);
 let filterOpen = ref(false);
 
@@ -51,6 +53,12 @@ const changeHandle = () => {
             results.value = fuse.search(keyword.value).map(x => x.item);
         }
     }, 200)
+}
+const simpleDisplayPipe = (name: string) => {
+    if(name.startsWith('コナステ版 SOUND VOLTEX')) {
+        return name.replace('コナステ版 SOUND VOLTEX', '')
+    }
+    return name;
 }
 </script>
 <style scoped>
@@ -80,12 +88,16 @@ const changeHandle = () => {
     text-decoration: underline;
     cursor: pointer;
 }
-.search-bar .filter-list {
-    max-height: 300px;
-    overflow: auto;
-}
-.search-bar .filter-list .package {
+.filter-list .package {
     display: block;
+    line-height: 30px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.filter-list .package.active {
+    color: cyan;
+}
+.filter-list .package .checkbox {
+    display: none;
 }
 .musics {
     display: flex;

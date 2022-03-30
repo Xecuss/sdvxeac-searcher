@@ -17,3 +17,17 @@ export const sortPackages = (packages: string[]) => {
     ).sort(sortMethod);
     return [...freePack, ...normalPack, ...monthPack, ...othersPack]
 }
+
+export const statMusic = (musics: IMusicItem[]) => {
+    const result = new Map<string, number>();
+    for(const music of musics) {
+        const count = result.get(music.pacakge);
+        if(count !== undefined) {
+            result.set(music.pacakge, count + 1);
+        }
+        else {
+            result.set(music.pacakge, 1);
+        }
+    }
+    return [...result].sort((x, y) => y[1] - x[1]);
+}

@@ -14,7 +14,7 @@
         </div>
     </div>
     <div class="musics">
-        <MusicItem v-for="item in results" :key="item.id" :data="item"/>
+        <MusicItem v-for="item in results" :key="item.id" :data="item" :selected="selectedMusic.has(item)" @select-click="selectMusic(item)"/>
     </div>
 </template>
 <script setup lang="ts">
@@ -23,7 +23,7 @@ import MusicDB from '../data/music_db.json';
 import Fuse from 'fuse.js';
 import { computed, Ref, ref } from 'vue';
 import Panel from './panel.vue';
-import { sortPackages } from '../lib/utils';
+import { sortPackages, statMusic } from '../lib/utils';
 
 let keyword = ref('');
 const musics: IMusicItem[] = MusicDB.data;
@@ -31,6 +31,7 @@ let results = ref(musics);
 // 取出目录，去重并排序
 const packages = sortPackages([...new Set(musics.map(music => music.pacakge))]);
 const selectedPack: Ref<string[]> = ref([]);
+const selectedMusic: Ref<Set<IMusicItem>> = ref(new Set());
 let filterOpen = ref(false);
 
 const filteredMusics = computed(() => {
@@ -59,6 +60,10 @@ const simpleDisplayPipe = (name: string) => {
         return name.replace('コナステ版 SOUND VOLTEX', '')
     }
     return name;
+}
+const selectMusic = (music: IMusicItem) => {
+    selectedMusic.value.add(music);
+    console.log(statMusic([...selectedMusic.value]).map(i => `${i[0]}: ${i[1]}`).join('\n'))
 }
 </script>
 <style scoped>

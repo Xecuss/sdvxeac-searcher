@@ -1,7 +1,7 @@
 <template>
 <div class="music-item">
     <div class="content">
-        <img class="cover" v-lazy="`https://p.eagate.573.jp/${data.cover}`" />
+        <img class="cover" v-lazy="`https://p.eagate.573.jp${data.cover}`"/>
         <h3 class="name">{{ data.name }}</h3>
         <p class="artist">{{data.artist}}</p>
         <div class="difficulties">
@@ -25,7 +25,7 @@
         </div>
     </div>
     <div class="btn-group">
-        <button class="select" @click.stop="selectMusic">Select</button>
+        <button class="select" :class="{ selected }" @click.stop="selectMusic">Select</button>
         <button class="copy">Copy</button>
     </div>
 </div>
@@ -37,14 +37,18 @@ const props = defineProps({
     data: {
         type: Object as PropType<IMusicItem>,
         required: true
+    },
+    selected: {
+        type: Boolean,
+        default: false
     }
 });
 const emit = defineEmits<{
-    (e: 'select', value: IMusicItem): void
+    (e: 'select-click'): void
 }>();
 
 const selectMusic = () => {
-    emit('select', props.data)
+    emit('select-click')
 };
 </script>
 <style scoped>
@@ -76,8 +80,8 @@ const selectMusic = () => {
 }
 .music-item .cover{
     display: block;
-    width: 187px;
-    height: 187px;
+    max-width: 187px;
+    max-height: 187px;
     margin: 0 auto;
     border-radius: 4px;
     position: relative;
@@ -158,6 +162,9 @@ const selectMusic = () => {
 }
 button.select {
     background-color: #fb494c;
+}
+button.select.selected {
+    background-color: aquamarine;
 }
 button.copy {
     background-color: #49c9fb;

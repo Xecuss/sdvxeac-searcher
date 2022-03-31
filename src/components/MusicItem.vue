@@ -33,16 +33,10 @@
 <script setup lang="ts">
 import { PropType } from 'vue';
 
-const props = defineProps({
-    data: {
-        type: Object as PropType<IMusicItem>,
-        required: true
-    },
-    selected: {
-        type: Boolean,
-        default: false
-    }
-});
+const props = defineProps<{
+    data: IMusicItem,
+    selected: boolean
+}>();
 const emit = defineEmits<{
     (e: 'select-click'): void
 }>();
@@ -159,12 +153,22 @@ const selectMusic = () => {
     line-height: 30px;
     font-size: 14px;
     width: 0;
+    transition: background-color 0.2s linear;
+    color: rgba(255, 255, 255, 0.83);
 }
 button.select {
     background-color: #fb494c;
 }
 button.select.selected {
     background-color: aquamarine;
+    color: rgba(0, 0, 0, 0.83);
+}
+button.select.selected::before {
+    content: '√';
+    margin-right: 5px;
+}
+button.select.selected::after {
+    content: 'ed';
 }
 button.copy {
     background-color: #49c9fb;

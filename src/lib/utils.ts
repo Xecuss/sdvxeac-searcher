@@ -18,16 +18,36 @@ export const sortPackages = (packages: string[]) => {
     return [...freePack, ...normalPack, ...monthPack, ...othersPack]
 }
 
+export const simpleDisplay = (name: string) => {
+    if(name.startsWith('コナステ版 SOUND VOLTEX')) {
+        return name.replace('コナステ版 SOUND VOLTEX', '')
+    }
+    return name;
+}
+
 export const statMusic = (musics: IMusicItem[]) => {
-    const result = new Map<string, number>();
+    const result = new Map<string, IMusicItem[]>();
     for(const music of musics) {
-        const count = result.get(music.pacakge);
-        if(count !== undefined) {
-            result.set(music.pacakge, count + 1);
+        let musicArr = result.get(music.pacakge);
+        if(musicArr === undefined) {
+            musicArr = [];
+            result.set(music.pacakge, musicArr);
+        }
+        musicArr.push(music);
+    }
+    return [...result]
+}
+
+export const statPackInfo = (musics: IMusicItem[]) => {
+    const packagesMap = new Map<string, number>();
+    musics.forEach(({ pacakge }) => {
+        const current = packagesMap.get(pacakge);
+        if(current !== undefined) {
+            packagesMap.set(pacakge, current + 1);
         }
         else {
-            result.set(music.pacakge, 1);
+            packagesMap.set(pacakge, 1);
         }
-    }
-    return [...result].sort((x, y) => y[1] - x[1]);
+    });
+    return packagesMap;
 }

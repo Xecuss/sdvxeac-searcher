@@ -1,9 +1,9 @@
 <template>
     <h1>コナステ版 SDVXEG 乐曲検索</h1>
-    <Panel  v-model:show="filterOpen">
+    <Panel v-model:show="filterOpen">
         <div class="filter-list">
             <label class="package" v-for="pack in packages" :class="{ active: selectedPack.indexOf(pack) !== -1 }">
-                <input class="checkbox" type="checkbox" v-model="selectedPack" :value="pack" @input="changeHandle"> {{simpleDisplayPipe(pack)}}
+                <input class="checkbox" type="checkbox" v-model="selectedPack" :value="pack" @input="changeHandle"> {{simpleDisplay(pack)}}
             </label>
         </div>
     </Panel>
@@ -21,18 +21,23 @@
 import MusicItem from './MusicItem.vue';
 import MusicDB from '../data/music_db.json';
 import Fuse from 'fuse.js';
-import { computed, Ref, ref } from 'vue';
+import { computed, provide, Ref, ref } from 'vue';
 import Panel from './panel.vue';
-import { sortPackages, statMusic } from '../lib/utils';
+import { sortPackages, statMusic, simpleDisplay, statPackInfo } from '../lib/utils';
 
 let keyword = ref('');
 const musics: IMusicItem[] = MusicDB.data;
 let results = ref(musics);
-// 取出目录，去重并排序
-const packages = sortPackages([...new Set(musics.map(music => music.pacakge))]);
+// 统计各个区包下的歌曲数
+const packInfo = statPackInfo(musics);
+// 这个map的keys就是曲包名，拿出来排序
+const packages = sortPackages([...packInfo.keys()]);
 const selectedPack: Ref<string[]> = ref([]);
 const selectedMusic: Ref<Set<IMusicItem>> = ref(new Set());
 let filterOpen = ref(false);
+// 提供出去供子组件使用
+provide('musics', musics);
+provide('packInfo', packInfo);
 
 const filteredMusics = computed(() => {
     if(!selectedPack.value.length) return musics;
@@ -55,15 +60,14 @@ const changeHandle = () => {
         }
     }, 200)
 }
-const simpleDisplayPipe = (name: string) => {
-    if(name.startsWith('コナステ版 SOUND VOLTEX')) {
-        return name.replace('コナステ版 SOUND VOLTEX', '')
-    }
-    return name;
-}
 const selectMusic = (music: IMusicItem) => {
-    selectedMusic.value.add(music);
-    console.log(statMusic([...selectedMusic.value]).map(i => `${i[0]}: ${i[1]}`).join('\n'))
+    if(selectedMusic.value.has(music)) {
+        selectedMusic.value.delete(music);
+    }
+    else {
+        selectedMusic.value.add(music);
+    }
+    const statRes = statMusic([...selectedMusic.value]).sort((x, y) => y[1].length - x[1].length);
 }
 </script>
 <style scoped>

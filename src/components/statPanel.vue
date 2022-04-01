@@ -1,12 +1,24 @@
 <template>
-<Panel v-model:show="show">
+<Panel :show="show" @update:show="$emit('update:show', false)">
     <div class="stat-panel">
-        <p v-for="item in showViewModel" :key="item.name">{{item.name}} - {{item.favPer}} - {{item.avgLevel}}</p>
+        <table class="stat-table">
+            <tr>
+                <th>Pack</th>
+                <th>Select/Total</th>
+                <th>Avg Diff</th>
+            </tr>
+            <tr v-for="item in showViewModel" :key="item.name">
+                <td>{{simpleDisplay(item.name)}}</td>
+                <td>{{item.favPer.toFixed(3)}}</td>
+                <td>{{item.avgLevel.toFixed(3)}}</td>
+            </tr>
+        </table>
     </div>
 </Panel>
 </template>
 <script setup lang="ts">
 import { computed, ComputedRef, inject, PropType } from 'vue';
+import { simpleDisplay } from '../lib/utils';
 import Panel from './panel.vue';
 
 interface IStatViewModel {
@@ -43,8 +55,13 @@ const showViewModel: ComputedRef<IStatViewModel[]> = computed(() => {
             avgLevel,
         }
     }).sort((x, y) => {
-        if(x.favPer !== y.favPer) return x.favPer - y.favPer;
-        return x.avgLevel - y.avgLevel;
+        if(x.favPer !== y.favPer) return y.favPer - x.favPer;
+        return y.avgLevel - x.avgLevel;
     })
 });
 </script>
+<style scoped>
+.stat-panel .stat-table {
+    min-width: 100%;
+}
+</style>

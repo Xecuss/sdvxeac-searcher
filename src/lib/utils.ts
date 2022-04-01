@@ -2,6 +2,35 @@ const sortMethod = (x: string, y: string) => x.localeCompare(y, 'ja', {
     numeric: true
 });
 
+export const readLSValue = <T = {}>(key: string) => {
+    try {
+        const str = localStorage.getItem(key);
+        if(!str) return null;
+        return JSON.parse(str) as T;
+    }
+    catch(e) {
+        return null;
+    }
+}
+
+export const writeLSValue = <T = {}>(key: string, value: T) => {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
+export const fromIdsGetMusic = (ids: string[], musics: IMusicItem[]) => {
+    const result = new Set<IMusicItem>();
+    if(ids.length === 0) return result;
+
+    const idsSet = new Set(ids);
+    for(let item of musics) {
+        if(idsSet.has(item.id)) {
+            result.add(item);
+        }
+        if(!idsSet.size) break;
+    }
+    return result;
+}
+
 export const sortPackages = (packages: string[]) => {
     // 月费会员曲包
     const monthPack = packages.filter(pack => pack.startsWith('20')).sort(sortMethod);

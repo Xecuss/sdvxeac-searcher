@@ -23,9 +23,9 @@
 import MusicItem from './MusicItem.vue';
 import MusicDB from '../data/music_db.json';
 import Fuse from 'fuse.js';
-import { computed, provide, Ref, ref } from 'vue';
+import { computed, provide, Ref, ref, watchEffect } from 'vue';
 import Panel from './panel.vue';
-import { sortPackages, statMusic, simpleDisplay, statPackInfo } from '../lib/utils';
+import { sortPackages, statMusic, simpleDisplay, statPackInfo, readLSValue, writeLSValue, fromIdsGetMusic } from '../lib/utils';
 import StatPanel from './statPanel.vue';
 
 let keyword = ref('');
@@ -35,13 +35,21 @@ let results = ref(musics);
 const packInfo = statPackInfo(musics);
 // 这个map的keys就是曲包名，拿出来排序
 const packages = sortPackages([...packInfo.keys()]);
-const selectedPack: Ref<string[]> = ref([]);
-const selectedMusic: Ref<Set<IMusicItem>> = ref(new Set());
+const selectedPack: Ref<string[]> = ref(readLSValue<string[]>('filter') ?? []);
+const selectedMusic: Ref<Set<IMusicItem>> = ref(fromIdsGetMusic(readLSValue('selected-music') ?? [], musics));
 let filterOpen = ref(false);
 let statOpen = ref(false);
 // 提供出去供子组件使用
 provide('musics', musics);
 provide('packInfo', packInfo);
+
+watchEffect(() => {
+    writeLSValue('filter', selectedPack.value);
+});
+
+watchEffect(() => {
+    writeLSValue('selected-music', [...selectedMusic.value].map(item => item.id));
+});
 
 const filteredMusics = computed(() => {
     if(!selectedPack.value.length) return musics;
@@ -72,6 +80,8 @@ const selectMusic = (music: IMusicItem) => {
         selectedMusic.value.add(music);
     }
 }
+// 手动执行一次，以保证初始结果
+changeHandle();
 </script>
 <style scoped>
 .search-bar {

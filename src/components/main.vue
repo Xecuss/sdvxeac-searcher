@@ -7,10 +7,12 @@
             </label>
         </div>
     </Panel>
+    <StatPanel v-model:show="statOpen" :data="statMusic([...selectedMusic])"/>
     <div class="search-bar">
         <input type="text" v-model="keyword" @input="changeHandle" placeholder="keyword..." class="keyword">
         <div class="setting-row">
             <span class="filter" @click="filterOpen = true">filter</span>
+            <span class="filter" @click="statOpen = true">stat</span>
         </div>
     </div>
     <div class="musics">
@@ -24,6 +26,7 @@ import Fuse from 'fuse.js';
 import { computed, provide, Ref, ref } from 'vue';
 import Panel from './panel.vue';
 import { sortPackages, statMusic, simpleDisplay, statPackInfo } from '../lib/utils';
+import StatPanel from './statPanel.vue';
 
 let keyword = ref('');
 const musics: IMusicItem[] = MusicDB.data;
@@ -35,6 +38,7 @@ const packages = sortPackages([...packInfo.keys()]);
 const selectedPack: Ref<string[]> = ref([]);
 const selectedMusic: Ref<Set<IMusicItem>> = ref(new Set());
 let filterOpen = ref(false);
+let statOpen = ref(false);
 // 提供出去供子组件使用
 provide('musics', musics);
 provide('packInfo', packInfo);
@@ -67,7 +71,6 @@ const selectMusic = (music: IMusicItem) => {
     else {
         selectedMusic.value.add(music);
     }
-    const statRes = statMusic([...selectedMusic.value]).sort((x, y) => y[1].length - x[1].length);
 }
 </script>
 <style scoped>

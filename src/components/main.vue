@@ -11,8 +11,8 @@
     <div class="search-bar">
         <input type="text" v-model="keyword" @input="changeHandle" placeholder="keyword..." class="keyword">
         <div class="setting-row">
-            <span class="filter" @click="filterOpen = true">filter</span>
-            <span class="filter" @click="statOpen = true">stat</span>
+            <button class="filter" :class="{ active: selectedPack.length }" @click="filterOpen = true">filter</button>
+            <button class="filter" v-if="selectedMusic.size" @click="statOpen = true">stat</button>
         </div>
     </div>
     <div class="musics">
@@ -103,12 +103,28 @@ changeHandle();
 .search-bar .setting-row {
     width: 90%;
     text-align: left;
-    margin: 0px auto;
+    margin: 5px auto 0;
+    display: flex;
+    justify-content: space-between;
 }
 .search-bar .filter {
-    color: blue;
-    text-decoration: underline;
-    cursor: pointer;
+    color: rgba(255, 255, 255, 0.83);
+    border: none;
+    background: #49c9fb;
+    font-size: 14px;
+    line-height: 30px;
+    height: 30px;
+    border-radius: 4px;
+    padding: 0 10px;
+    display: block;
+}
+.search-bar .filter.active {
+    background-color: aquamarine;
+    color: rgba(0, 0, 0, 0.83);
+}
+.search-bar .filter.active::after {
+    content: '√';
+    margin-right: 4px;
 }
 .filter-list .package {
     display: block;

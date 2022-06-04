@@ -26,10 +26,11 @@ import { loadMusicDB, sortPackages } from '../lib/utils';
 
 let keyword = ref('');
 let musics: IMusicItem[] = reactive([]);
-let results = ref(musics);
+let results: Ref<IMusicItem[]> = ref([]);
 
 loadMusicDB().then(res => {
     musics.push(...res);
+    changeHandle()
 })
 
 // 取出目录，去重并排序
@@ -48,7 +49,8 @@ const changeHandle = () => {
     clearTimeout(timer);
     timer = setTimeout(() => {
         if(!keyword.value.trim()) {
-            results.value = filteredMusics.value.slice(0, 200);
+            if (selectedPack.value.length) results.value = filteredMusics.value;
+            else results.value = filteredMusics.value.slice(0, 200);
         }
         else {
             const fuse = new Fuse(filteredMusics.value, {

@@ -111,6 +111,10 @@ const props = defineProps({
     background-color: rgba(255,89,205,0.6);
     border: 1px solid #ff59cd;
 }
+.difficulties .difficulty.INF {
+    background-color: rgba(238,101,229,0.3);
+    border: 1px solid #ee65e5;
+}
 .music-item .categorys {
     display: flex;
     justify-content: center;

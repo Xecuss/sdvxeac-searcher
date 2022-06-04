@@ -1,3 +1,7 @@
+import versionData from '../data/data_version.json';
+
+const localStoreKey = 'x-sdvx-songdb'
+
 const sortMethod = (x: string, y: string) => x.localeCompare(y, 'ja', {
     numeric: true
 });
@@ -16,4 +20,20 @@ export const sortPackages = (packages: string[]) => {
         && pack !== '最初からプレーできます'
     ).sort(sortMethod);
     return [...freePack, ...normalPack, ...monthPack, ...othersPack]
+}
+
+export const loadMusicDB = async () => {
+    const storageRes = localStorage.getItem(localStoreKey);
+    if (storageRes) {
+        const data = JSON.parse(storageRes);
+        if (data.version >= versionData.version) return data.songs as IMusicItem[];
+    }
+
+    const fetchRes = await fetch('./music_db.json?r=' + new Date().valueOf())
+    const res = await fetchRes.json() as IMusicDB
+    localStorage.setItem(localStoreKey, JSON.stringify({
+        version: versionData.version,
+        songs: res.data,
+    }));
+    return res.data;
 }

@@ -19,17 +19,21 @@
 </template>
 <script setup lang="ts">
 import MusicItem from './MusicItem.vue';
-import MusicDB from '../data/music_db.json';
 import Fuse from 'fuse.js';
-import { computed, Ref, ref } from 'vue';
+import { computed, reactive, Ref, ref } from 'vue';
 import Panel from './panel.vue';
-import { sortPackages } from '../lib/utils';
+import { loadMusicDB, sortPackages } from '../lib/utils';
 
 let keyword = ref('');
-const musics: IMusicItem[] = MusicDB.data;
+let musics: IMusicItem[] = reactive([]);
 let results = ref(musics);
+
+loadMusicDB().then(res => {
+    musics.push(...res);
+})
+
 // 取出目录，去重并排序
-const packages = sortPackages([...new Set(musics.map(music => music.pacakge))]);
+const packages = computed(() => sortPackages([...new Set(musics.map(music => music.pacakge))]));
 const selectedPack: Ref<string[]> = ref([]);
 let filterOpen = ref(false);
 

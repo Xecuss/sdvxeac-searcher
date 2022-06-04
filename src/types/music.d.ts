@@ -13,3 +13,8 @@ interface IMusicItem {
     cover: string;
     pacakge: string;
 }
+
+interface IMusicDB {
+    progress: number;
+    data: IMusicItem[]
+}

@@ -1,9 +1,12 @@
 <template>
-    <h1>コナステ版 SDVXEG 乐曲検索</h1>
+    <h1 @click="titleClickHandle">コナステ版 SDVXEG 乐曲検索</h1>
     <Panel v-model:show="filterOpen">
         <div class="filter-list">
             <label class="package" v-for="pack in packages" :class="{ active: selectedPack.indexOf(pack) !== -1 }">
                 <input class="checkbox" type="checkbox" v-model="selectedPack" :value="pack" @input="changeHandle"> {{simpleDisplay(pack)}}
+            </label>
+            <label class="package" :class="{ active: optEnable }" v-if="displayHidden">
+                <input class="checkbox" type="checkbox"  v-model="optEnable"> ？？？
             </label>
         </div>
     </Panel>
@@ -16,7 +19,7 @@
         </div>
     </div>
     <div class="musics">
-        <MusicItem v-for="item in results" :key="item.id" :data="item" :selected="selectedMusic.has(item)" @select-click="selectMusic(item)"/>
+        <MusicItem v-for="item in results" :key="item.id" :data="item" :selected="selectedMusic.has(item)" :opt-enable="optEnable" @select-click="selectMusic(item)"/>
     </div>
 </template>
 <script setup lang="ts">
@@ -71,6 +74,16 @@ const changeHandle = () => {
             results.value = fuse.search(keyword.value).map(x => x.item);
         }
     }, 200)
+}
+/* 暂时隐藏还没开发完的功能 */
+const optEnable: Ref<boolean> = ref(false)
+const displayHidden: Ref<boolean> = ref(false)
+let clickCount = 0;
+const titleClickHandle = () => {
+    clickCount++;
+    if (clickCount > 5) {
+        displayHidden.value = true;
+    }
 }
 const selectMusic = (music: IMusicItem) => {
     if(selectedMusic.value.has(music)) {

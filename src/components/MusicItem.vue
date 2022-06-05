@@ -1,5 +1,5 @@
 <template>
-<div class="music-item">
+<div class="music-item" :style="{ paddingBottom: optEnable ? '30px' : '0' }">
     <div class="content">
         <img class="cover" v-lazy="`https://p.eagate.573.jp${data.cover}`"/>
         <h3 class="name">{{ data.name }}</h3>
@@ -24,18 +24,18 @@
             >{{cate}}</div>
         </div>
     </div>
-    <div class="btn-group">
+    <div class="btn-group" v-if="optEnable">
         <button class="select" :class="{ selected }" @click.stop="selectMusic">Select</button>
         <button class="copy">Copy</button>
     </div>
 </div>
 </template>
 <script setup lang="ts">
-import { PropType } from 'vue';
 
 const props = defineProps<{
     data: IMusicItem,
-    selected: boolean
+    selected: boolean,
+    optEnable?: boolean,
 }>();
 const emit = defineEmits<{
     (e: 'select-click'): void
@@ -49,12 +49,11 @@ const selectMusic = () => {
 .music-item {
     width: 90%;
     margin: 20px auto 0;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    /* border: 1px solid rgba(0, 0, 0, 0.1); */
     border-radius: 8px;
-    box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.07);
     overflow: hidden;
     position: relative;
-    padding-bottom: 30px;
     box-sizing: border-box;
 }
 .music-item .content {

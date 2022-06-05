@@ -1,42 +1,65 @@
 <template>
-    <h1>コナステ版 SDVXEG 乐曲検索</h1>
-    <Panel  v-model:show="filterOpen">
+    <h1 @click="titleClickHandle">コナステ版 SDVXEG 乐曲検索</h1>
+    <Panel v-model:show="filterOpen">
         <div class="filter-list">
             <label class="package" v-for="pack in packages" :class="{ active: selectedPack.indexOf(pack) !== -1 }">
-                <input class="checkbox" type="checkbox" v-model="selectedPack" :value="pack" @input="changeHandle"> {{simpleDisplayPipe(pack)}}
+                <input class="checkbox" type="checkbox" v-model="selectedPack" :value="pack" @input="changeHandle"> {{simpleDisplay(pack)}}
+            </label>
+            <label class="package" :class="{ active: optEnable }" v-if="displayHidden">
+                <input class="checkbox" type="checkbox"  v-model="optEnable"> ？？？
             </label>
         </div>
     </Panel>
+    <StatPanel v-model:show="statOpen" :data="statMusic([...selectedMusic])"/>
     <div class="search-bar">
         <input type="text" v-model="keyword" @input="changeHandle" placeholder="keyword..." class="keyword">
         <div class="setting-row">
-            <span class="filter" @click="filterOpen = true">filter</span>
+            <button class="filter" :class="{ active: selectedPack.length }" @click="filterOpen = true">filter</button>
+            <button class="filter" v-if="selectedMusic.size" @click="statOpen = true">stat</button>
         </div>
     </div>
     <div class="musics">
-        <MusicItem v-for="item in results" :key="item.id" :data="item"/>
+        <MusicItem v-for="item in results" :key="item.id" :data="item" :selected="selectedMusic.has(item)" :opt-enable="optEnable" @select-click="selectMusic(item)"/>
     </div>
 </template>
 <script setup lang="ts">
 import MusicItem from './MusicItem.vue';
 import Fuse from 'fuse.js';
-import { computed, reactive, Ref, ref } from 'vue';
+import { computed, provide, reactive, Ref, ref, watchEffect } from 'vue';
 import Panel from './panel.vue';
-import { loadMusicDB, sortPackages } from '../lib/utils';
+import { sortPackages, statMusic, simpleDisplay, statPackInfo, readLSValue, writeLSValue, fromIdsGetMusic, loadMusicDB } from '../lib/utils';
+import StatPanel from './statPanel.vue';
 
 let keyword = ref('');
 let musics: IMusicItem[] = reactive([]);
 let results: Ref<IMusicItem[]> = ref([]);
 
+// 统计各个区包下的歌曲数
+const packInfo = computed(() => statPackInfo(musics));
+// 这个map的keys就是曲包名，拿出来排序
+const packages = computed(() => sortPackages([...packInfo.value.keys()]));
+const selectedPack: Ref<string[]> = ref(readLSValue<string[]>('filter') ?? []);
+const selectedMusic: Ref<Set<IMusicItem>> = ref(new Set());
+
 loadMusicDB().then(res => {
     musics.push(...res);
+    selectedMusic.value = new Set(fromIdsGetMusic(readLSValue('selected-music') ?? [], musics))
     changeHandle()
 })
 
-// 取出目录，去重并排序
-const packages = computed(() => sortPackages([...new Set(musics.map(music => music.pacakge))]));
-const selectedPack: Ref<string[]> = ref([]);
 let filterOpen = ref(false);
+let statOpen = ref(false);
+// 提供出去供子组件使用
+provide('musics', musics);
+provide('packInfo', packInfo);
+
+watchEffect(() => {
+    writeLSValue('filter', selectedPack.value);
+});
+
+watchEffect(() => {
+    writeLSValue('selected-music', [...selectedMusic.value].map(item => item.id));
+});
 
 const filteredMusics = computed(() => {
     if(!selectedPack.value.length) return musics;
@@ -60,11 +83,23 @@ const changeHandle = () => {
         }
     }, 200)
 }
-const simpleDisplayPipe = (name: string) => {
-    if(name.startsWith('コナステ版 SOUND VOLTEX')) {
-        return name.replace('コナステ版 SOUND VOLTEX', '')
+/* 暂时隐藏还没开发完的功能 */
+const optEnable: Ref<boolean> = ref(false)
+const displayHidden: Ref<boolean> = ref(false)
+let clickCount = 0;
+const titleClickHandle = () => {
+    clickCount++;
+    if (clickCount > 5) {
+        displayHidden.value = true;
     }
-    return name;
+}
+const selectMusic = (music: IMusicItem) => {
+    if(selectedMusic.value.has(music)) {
+        selectedMusic.value.delete(music);
+    }
+    else {
+        selectedMusic.value.add(music);
+    }
 }
 </script>
 <style scoped>
@@ -87,12 +122,28 @@ const simpleDisplayPipe = (name: string) => {
 .search-bar .setting-row {
     width: 90%;
     text-align: left;
-    margin: 0px auto;
+    margin: 5px auto 0;
+    display: flex;
+    justify-content: space-between;
 }
 .search-bar .filter {
-    color: blue;
-    text-decoration: underline;
-    cursor: pointer;
+    color: rgba(255, 255, 255, 0.83);
+    border: none;
+    background: #49c9fb;
+    font-size: 14px;
+    line-height: 30px;
+    height: 30px;
+    border-radius: 4px;
+    padding: 0 10px;
+    display: block;
+}
+.search-bar .filter.active {
+    background-color: aquamarine;
+    color: rgba(0, 0, 0, 0.83);
+}
+.search-bar .filter.active::after {
+    content: '√';
+    margin-right: 4px;
 }
 .filter-list .package {
     display: block;

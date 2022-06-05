@@ -7,10 +7,12 @@ specifiers:
   vite: ^2.7.2
   vue: ^3.2.25
   vue-tsc: ^0.29.8
+  vue3-lazy: ^1.0.0-alpha.1
 
 dependencies:
   fuse.js: 6.5.3
   vue: 3.2.26
+  vue3-lazy: 1.0.0-alpha.1_vue@3.2.26
 
 devDependencies:
   '@vitejs/plugin-vue': 2.0.1_vite@2.7.12+vue@3.2.26
@@ -921,6 +923,15 @@ packages:
       '@vue/runtime-dom': 3.2.26
       '@vue/server-renderer': 3.2.26_vue@3.2.26
       '@vue/shared': 3.2.26
+    dev: false
+
+  /vue3-lazy/1.0.0-alpha.1_vue@3.2.26:
+    resolution: {integrity: sha512-dpjpKK4DC5q+wZVtS/VY3X6pYBJHxRmYanr20s39RB6o6fvbneQ/DNuz37bipYfEdrEvbSZ95Y2SCexuznQNrQ==}
+    engines: {node: '>=6.0.0'}
+    peerDependencies:
+      vue: ^3.0.0-alpha.9
+    dependencies:
+      vue: 3.2.26
     dev: false
 
   /with/7.0.2:

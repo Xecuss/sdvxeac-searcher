@@ -1,5 +1,8 @@
 import { createApp } from 'vue';
 import App from './App.vue';
-import VueLazyLoad from './lib/vue3-lazyload';
+import VueLazyLoad from 'vue3-lazy';
 
-createApp(App).use(VueLazyLoad).mount('#app');
+createApp(App).use(VueLazyLoad, {
+    error: '',
+    loading: ''
+}).mount('#app');

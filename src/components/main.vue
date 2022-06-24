@@ -19,6 +19,7 @@
         </div>
     </div>
     <div class="musics">
+        <p class="total">total {{ realResultLength }} musics.</p>
         <MusicItem v-for="item in results" :key="item.id" :data="item" :selected="selectedMusic.has(item)" :opt-enable="optEnable" @select-click="selectMusic(item)"/>
     </div>
 </template>
@@ -33,6 +34,7 @@ import StatPanel from './statPanel.vue';
 let keyword = ref('');
 let musics: IMusicItem[] = reactive([]);
 let results: Ref<IMusicItem[]> = ref([]);
+let realResultLength: Ref<number> = ref(0);
 
 // 统计各个区包下的歌曲数
 const packInfo = computed(() => statPackInfo(musics));
@@ -72,6 +74,7 @@ const changeHandle = () => {
     clearTimeout(timer);
     timer = setTimeout(() => {
         if(!keyword.value.trim()) {
+            realResultLength.value = filteredMusics.value.length;
             if (selectedPack.value.length) results.value = filteredMusics.value;
             else results.value = filteredMusics.value.slice(0, 200);
         }
@@ -80,6 +83,7 @@ const changeHandle = () => {
                 keys: ['name', 'artist']
             });
             results.value = fuse.search(keyword.value).map(x => x.item);
+            realResultLength.value = results.value.length;
         }
     }, 200)
 }
@@ -159,5 +163,8 @@ const selectMusic = (music: IMusicItem) => {
 .musics {
     display: flex;
     flex-wrap: wrap;
+}
+.musics .total {
+    margin: 0 0 0 20px;
 }
 </style>

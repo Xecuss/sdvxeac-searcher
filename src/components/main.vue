@@ -1,5 +1,5 @@
 <template>
-    <h1 @click="titleClickHandle">コナステ版 SDVXEG 乐曲検索</h1>
+    <h1 @click="titleClickHandle">コナステ版 SDVXEG 楽曲検索</h1>
     <Panel v-model:show="filterOpen">
         <div class="filter-list">
             <label class="package" v-for="pack in packages" :class="{ active: selectedPack.indexOf(pack) !== -1 }">
@@ -19,7 +19,7 @@
         </div>
     </div>
     <div class="musics">
-        <p class="total">total {{ realResultLength }} musics.</p>
+        <p class="total">total {{ realResultLength }} songs</p>
         <MusicItem v-for="item in results" :key="item.id" :data="item" :selected="selectedMusic.has(item)" :opt-enable="optEnable" @select-click="selectMusic(item)"/>
     </div>
 </template>

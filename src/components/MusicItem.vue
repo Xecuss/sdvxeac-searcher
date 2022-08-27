@@ -73,21 +73,13 @@ const selectMusic = () => {
 }
 .music-item .cover{
     display: block;
-    max-width: 187px;
-    max-height: 187px;
+    width: 187px;
+    height: 187px;
     margin: 0 auto;
     border-radius: 4px;
     position: relative;
+    object-fit: cover;
 }
-.cover[lazy=loading] {
-    width: 0;
-    height: 0;
-}
-.cover[lazy=error] {
-    display: none;
-}
-/* .cover[lazy=loaded] {
-} */
 .music-item .difficulties {
     display: flex;
     justify-content: center;

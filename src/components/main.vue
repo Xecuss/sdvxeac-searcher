@@ -15,7 +15,7 @@
         <input type="text" v-model="keyword" @input="changeHandle" placeholder="keyword..." class="keyword">
         <div class="setting-row">
             <button class="filter" :class="{ active: selectedPack.length }" @click="filterOpen = true">filter</button>
-            <button class="filter" v-if="selectedMusic.size" @click="statOpen = true">stat</button>
+            <button class="filter" v-if="selectedMusic.size && optEnable" @click="statOpen = true">stat</button>
         </div>
     </div>
     <div class="musics">
@@ -28,24 +28,26 @@ import MusicItem from './MusicItem.vue';
 import Fuse from 'fuse.js';
 import { computed, provide, reactive, Ref, ref, watchEffect } from 'vue';
 import Panel from './panel.vue';
-import { sortPackages, statMusic, simpleDisplay, statPackInfo, readLSValue, writeLSValue, fromIdsGetMusic, loadMusicDB } from '../lib/utils';
+import { sortPackages, statMusic, simpleDisplay, statPackInfo, readLSValue, writeLSValue, loadMusicDB } from '../lib/utils';
 import StatPanel from './statPanel.vue';
+import useHideFn from '../hooks/hideFn';
 
 let keyword = ref('');
 let musics: IMusicItem[] = reactive([]);
 let results: Ref<IMusicItem[]> = ref([]);
 let realResultLength: Ref<number> = ref(0);
+const optEnable: Ref<boolean> = ref(false)
 
 // 统计各个区包下的歌曲数
 const packInfo = computed(() => statPackInfo(musics));
 // 这个map的keys就是曲包名，拿出来排序
 const packages = computed(() => sortPackages([...packInfo.value.keys()]));
 const selectedPack: Ref<string[]> = ref(readLSValue<string[]>('filter') ?? []);
-const selectedMusic: Ref<Set<IMusicItem>> = ref(new Set());
+const { selectedMusic, selectMusic, initSelectedMusic, displayHidden, titleClickHandle } = useHideFn();
 
 loadMusicDB().then(res => {
     musics.push(...res);
-    selectedMusic.value = new Set(fromIdsGetMusic(readLSValue('selected-music') ?? [], musics))
+    initSelectedMusic(musics);
     changeHandle()
 })
 
@@ -57,10 +59,6 @@ provide('packInfo', packInfo);
 
 watchEffect(() => {
     writeLSValue('filter', selectedPack.value);
-});
-
-watchEffect(() => {
-    writeLSValue('selected-music', [...selectedMusic.value].map(item => item.id));
 });
 
 const filteredMusics = computed(() => {
@@ -86,24 +84,6 @@ const changeHandle = () => {
             realResultLength.value = results.value.length;
         }
     }, 200)
-}
-/* 暂时隐藏还没开发完的功能 */
-const optEnable: Ref<boolean> = ref(false)
-const displayHidden: Ref<boolean> = ref(false)
-let clickCount = 0;
-const titleClickHandle = () => {
-    clickCount++;
-    if (clickCount > 5) {
-        displayHidden.value = true;
-    }
-}
-const selectMusic = (music: IMusicItem) => {
-    if(selectedMusic.value.has(music)) {
-        selectedMusic.value.delete(music);
-    }
-    else {
-        selectedMusic.value.add(music);
-    }
 }
 </script>
 <style scoped>

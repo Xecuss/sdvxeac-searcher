@@ -18,8 +18,8 @@
             <button class="filter" v-if="selectedMusic.size && optEnable" @click="statOpen = true">stat</button>
         </div>
     </div>
+    <p class="total">total {{ realResultLength }} songs</p>
     <div class="musics">
-        <p class="total">total {{ realResultLength }} songs</p>
         <MusicItem v-for="item in results" :key="item.id" :data="item" :selected="selectedMusic.has(item)" :opt-enable="optEnable" @select-click="selectMusic(item)"/>
     </div>
 </template>
@@ -144,7 +144,8 @@ const changeHandle = () => {
     display: flex;
     flex-wrap: wrap;
 }
-.musics .total {
-    margin: 0 0 0 20px;
+.total {
+    margin: 0 20px;
+    text-align: left;
 }
 </style>

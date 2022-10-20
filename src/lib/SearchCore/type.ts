@@ -31,4 +31,7 @@ export interface ISearchParams {
     keyword: string;
 }
 
-export type Filter = (from: ICompressedMusicItem[], params: ISearchParams) => ICompressedMusicItem[];
+export type Filter = (
+    from: ICompressedMusicItem[],
+    params: ISearchParams
+) => ICompressedMusicItem[];

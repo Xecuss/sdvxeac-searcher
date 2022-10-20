@@ -1,2 +1,2 @@
-export * from './type';
-export * from './SearcherCore';
+export * from "./type";
+export * from "./SearcherCore";

@@ -1,25 +1,25 @@
 <template>
-<div class="blur-bg" @click.stop="requireClose" v-if="show">
-    <div class="float-panel" @click.stop>
-        <slot />
+    <div v-if="show" class="blur-bg" @click.stop="requireClose">
+        <div class="float-panel" @click.stop>
+            <slot />
+        </div>
     </div>
-</div>
 </template>
 <script setup lang="ts">
 const props = defineProps({
     show: {
         type: Boolean,
         default: false,
-    }
+    },
 });
 
 const emit = defineEmits<{
-    (e: 'update:show', value: boolean): void
-}>()
+    (e: "update:show", value: boolean): void;
+}>();
 
 const requireClose = () => {
-    emit('update:show', false)
-}
+    emit("update:show", false);
+};
 </script>
 <style scoped>
 .blur-bg {

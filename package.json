@@ -12,9 +12,17 @@
     "vue3-lazy": "^1.0.0-alpha.1"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
     "@vitejs/plugin-vue": "^2.0.0",
+    "eslint": "^8.25.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-vue": "^9.6.0",
+    "prettier": "^2.7.1",
     "typescript": "^4.4.4",
     "vite": "^2.7.2",
+    "vue-eslint-parser": "^9.1.0",
     "vue-tsc": "^0.29.8"
   }
 }

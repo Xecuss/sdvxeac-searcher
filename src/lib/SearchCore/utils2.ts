@@ -1,10 +1,11 @@
-import { version as currentVersion } from '../data/music_db_final.json';
-import { IMusicData } from './SearcherCore';
+import { version as currentVersion } from '../../../public/music_db_final.json';
+import { IMusicData } from './type';
 
 export const loadMusicsWithCache = async (url: string, storeKey: string) => {
     const storageRes = localStorage.getItem(storeKey);
     if (storageRes) {
         const data = JSON.parse(storageRes) as IMusicData;
+        console.log(data.version, currentVersion);
         if (data.version >= currentVersion) return data;
     }
 

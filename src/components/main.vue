@@ -2,8 +2,14 @@
     <h1 @click="titleClickHandle">コナステ版 SDVXEG 楽曲検索</h1>
     <Panel v-model:show="filterOpen">
         <div class="filter-list">
-            <label class="package" v-for="pack in packages" :class="{ active: selectedPack.indexOf(pack) !== -1 }">
-                <input class="checkbox" type="checkbox" v-model="selectedPack" :value="pack" @input="changeHandle"> {{simpleDisplay(pack)}}
+            <label class="package" v-for="pack in packInfo" :key="pack.id" :class="{ active: searchParam.pack.indexOf(pack.id) !== -1 }">
+                <input 
+                    class="checkbox" 
+                    type="checkbox" 
+                    v-model="searchParam.pack" 
+                    :value="pack.id" 
+                    @input="changeHandle"
+                > {{simpleDisplay(pack.name)}}
             </label>
             <label class="package" :class="{ active: optEnable }" v-if="displayHidden">
                 <input class="checkbox" type="checkbox"  v-model="optEnable"> ？？？
@@ -12,9 +18,9 @@
     </Panel>
     <StatPanel v-model:show="statOpen" :data="statMusic([...selectedMusic])"/>
     <div class="search-bar">
-        <input type="text" v-model="keyword" @input="changeHandle" placeholder="keyword..." class="keyword">
+        <input type="text" v-model="searchParam.keyword" @input="changeHandle" placeholder="keyword..." class="keyword">
         <div class="setting-row">
-            <button class="filter" :class="{ active: selectedPack.length }" @click="filterOpen = true">filter</button>
+            <button class="filter" :class="{ active: searchParam.pack.length }" @click="filterOpen = true">filter</button>
             <button class="filter" v-if="selectedMusic.size && optEnable" @click="statOpen = true">stat</button>
         </div>
     </div>
@@ -25,30 +31,45 @@
 </template>
 <script setup lang="ts">
 import MusicItem from './MusicItem.vue';
-import Fuse from 'fuse.js';
-import { computed, provide, reactive, Ref, ref, watchEffect } from 'vue';
+import { provide, reactive, Ref, ref, watchEffect } from 'vue';
 import Panel from './panel.vue';
-import { sortPackages, statMusic, simpleDisplay, statPackInfo, readLSValue, writeLSValue, loadMusicDB } from '../lib/utils';
+import { simpleDisplay, readLSValue, writeLSValue, statMusic } from '../lib/utils';
 import StatPanel from './statPanel.vue';
 import useHideFn from '../hooks/hideFn';
+import { EacSearcher, ICompressedItem, ISearchParams } from '../lib/SearchCore';
 
-let keyword = ref('');
+const filterKey = 'filter2';
+
 let musics: IMusicItem[] = reactive([]);
+let searchCore: EacSearcher;
+const searchParam: ISearchParams = reactive({
+    keyword: '', 
+    pack: readLSValue<number[]>(filterKey) ?? [], 
+    cate: [], 
+    difficulties: []
+});
 let results: Ref<IMusicItem[]> = ref([]);
 let realResultLength: Ref<number> = ref(0);
 const optEnable: Ref<boolean> = ref(false)
 
 // 统计各个区包下的歌曲数
-const packInfo = computed(() => statPackInfo(musics));
-// 这个map的keys就是曲包名，拿出来排序
-const packages = computed(() => sortPackages([...packInfo.value.keys()]));
-const selectedPack: Ref<string[]> = ref(readLSValue<string[]>('filter') ?? []);
+let packInfo: ICompressedItem[] = reactive([]);
 const { selectedMusic, selectMusic, initSelectedMusic, displayHidden, titleClickHandle } = useHideFn();
 
-loadMusicDB().then(res => {
-    musics.push(...res);
-    initSelectedMusic(musics);
-    changeHandle()
+const search = () => {
+    if (!searchCore) return;
+
+    const realResults = searchCore.search(searchParam);
+    realResultLength.value = realResults.length;
+    results.value = realResults.slice(0, 200);
+}
+
+EacSearcher.createSearcher('./music_db_final.json').then(core => {
+    searchCore = core;
+    core.packInfo.forEach(item => packInfo.push(item));
+    search();
+    // initSelectedMusic(results.value);
+    changeHandle();
 })
 
 let filterOpen = ref(false);
@@ -58,31 +79,15 @@ provide('musics', musics);
 provide('packInfo', packInfo);
 
 watchEffect(() => {
-    writeLSValue('filter', selectedPack.value);
-});
-
-const filteredMusics = computed(() => {
-    if(!selectedPack.value.length) return musics;
-    const selectedPackSet = new Set(selectedPack.value);
-    return musics.filter(music => selectedPackSet.has(music.pacakge));
+    search();
+    writeLSValue(filterKey, searchParam.pack);
 });
 
 let timer: number;
 const changeHandle = () => {
     clearTimeout(timer);
     timer = setTimeout(() => {
-        if(!keyword.value.trim()) {
-            realResultLength.value = filteredMusics.value.length;
-            if (selectedPack.value.length) results.value = filteredMusics.value;
-            else results.value = filteredMusics.value.slice(0, 200);
-        }
-        else {
-            const fuse = new Fuse(filteredMusics.value, {
-                keys: ['name', 'artist']
-            });
-            results.value = fuse.search(keyword.value).map(x => x.item);
-            realResultLength.value = results.value.length;
-        }
+        search();
     }, 200)
 }
 </script>

@@ -7,7 +7,7 @@
                     <th>Select/Total</th>
                     <th>Avg Diff</th>
                 </tr>
-                <tr v-for="item in showViewModel" :key="item.name">
+                <tr v-for="item in data" :key="item.name">
                     <td>{{ simpleDisplay(item.name) }}</td>
                     <td>{{ item.favPer.toFixed(3) }}</td>
                     <td>{{ item.avgLevel.toFixed(3) }}</td>
@@ -17,18 +17,10 @@
     </Panel>
 </template>
 <script setup lang="ts">
-import { computed, ComputedRef, inject, PropType } from "vue";
+import { PropType } from "vue";
+import { IStatResult } from "../lib/SearchCore";
 import { simpleDisplay } from "../lib/utils";
 import Panel from "./FloatPanel.vue";
-
-interface IStatViewModel {
-    name: string;
-    favCount: number;
-    favPer: number;
-    avgLevel: number;
-}
-
-let packInfo = inject<ComputedRef<Map<string, number>>>("packInfo");
 
 const props = defineProps({
     show: {
@@ -36,39 +28,13 @@ const props = defineProps({
         type: Boolean,
     },
     data: {
-        type: Array as PropType<[string, IMusicItem[]][]>,
+        type: Array as PropType<IStatResult[]>,
         default: () => [],
     },
 });
 
 defineEmits({
     "update:show": Boolean,
-});
-
-const showViewModel: ComputedRef<IStatViewModel[]> = computed(() => {
-    return props.data
-        .map((item) => {
-            const [name, packs] = item;
-            const packContains = packInfo?.value?.get(name);
-            const favCount = packs.length;
-            const favPer =
-                packContains !== undefined ? favCount / packContains : 0;
-            const avgLevel =
-                packs.reduce(
-                    (prev, item) => prev + item.difficulties.slice(-1)[0].level,
-                    0
-                ) / favCount;
-            return {
-                name,
-                favCount,
-                favPer,
-                avgLevel,
-            };
-        })
-        .sort((x, y) => {
-            if (x.favPer !== y.favPer) return y.favPer - x.favPer;
-            return y.avgLevel - x.avgLevel;
-        });
 });
 </script>
 <style scoped>

@@ -7,11 +7,12 @@ import {
 } from "./filters";
 import {
     Filter,
+    ICompressedItem,
     ICompressedMusicItem,
     IMusicData,
     ISearchParams,
 } from "./type";
-import { loadMusicsWithCache } from "./utils";
+import { loadMusicsWithCache, statMusics } from "./utils";
 
 const localStoreKey = "x-sdvx-songdb";
 
@@ -28,8 +29,9 @@ const diffMap: { [k: string]: string } = {
 };
 
 export class EacSearcher {
-    private packIdMap: Map<number, string> = new Map();
-    private cateIdMap: Map<number, string> = new Map();
+    private packIdMap: Map<number, ICompressedItem> = new Map();
+    private cateIdMap: Map<number, ICompressedItem> = new Map();
+    private musicsIdMap: Map<string, ICompressedMusicItem> = new Map();
     private musics: ICompressedMusicItem[] = [];
     private filter: Filter = (from) => from;
     private __raw: IMusicData;
@@ -41,15 +43,16 @@ export class EacSearcher {
         return this.__raw.cateInfo;
     }
 
+    get allSongs() {
+        return this.mapToLegacy(this.musics);
+    }
+
     constructor(musicData: IMusicData, filters?: Filter[]) {
         this.musics = musicData.musics;
         this.__raw = musicData;
-        musicData.packInfo.forEach(({ id, name }) =>
-            this.packIdMap.set(id, name)
-        );
-        musicData.cateInfo.forEach(({ id, name }) =>
-            this.cateIdMap.set(id, name)
-        );
+        musicData.packInfo.forEach((item) => this.packIdMap.set(item.id, item));
+        musicData.cateInfo.forEach((item) => this.cateIdMap.set(item.id, item));
+        musicData.musics.forEach((item) => this.musicsIdMap.set(item.id, item));
         if (filters) {
             this.setFilter(filters);
         }
@@ -67,9 +70,9 @@ export class EacSearcher {
                 name: diffMap[diff.n.toString()] || "",
                 level: diff.l,
             })),
-            pacakge: this.packIdMap.get(music.package) || "",
+            pacakge: this.packIdMap.get(music.package)?.name || "",
             category: music.category.map(
-                (cate) => this.cateIdMap.get(cate) || ""
+                (cate) => this.cateIdMap.get(cate)?.name || ""
             ),
             cover: "/game/sdvx/vi/common/jacket.html?img=" + music.cover,
         }));
@@ -78,6 +81,13 @@ export class EacSearcher {
     public search(params: ISearchParams) {
         const res = this.filter(this.musics, params);
         return this.mapToLegacy(res);
+    }
+
+    public statSelect(selectedIds: string[]) {
+        const selectedMusics = selectedIds.map((id) =>
+            this.musicsIdMap.get(id)
+        ) as ICompressedMusicItem[];
+        return statMusics(selectedMusics, this.packIdMap);
     }
 
     static async createSearcher(url: string) {

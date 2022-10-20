@@ -16,6 +16,7 @@ export interface ICompressedMusicItem {
 export interface ICompressedItem {
     id: number;
     name: string;
+    count: number;
 }
 export interface IMusicData {
     version: number;
@@ -35,3 +36,10 @@ export type Filter = (
     from: ICompressedMusicItem[],
     params: ISearchParams
 ) => ICompressedMusicItem[];
+
+export interface IStatResult {
+    name: string;
+    favCount: number;
+    favPer: number;
+    avgLevel: number;
+}

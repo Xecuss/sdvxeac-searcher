@@ -1,16 +1,14 @@
-import { Ref, ref, watchEffect } from "vue";
+import { reactive, Ref, ref, watchEffect } from "vue";
 import { readLSValue, writeLSValue } from "../lib/utils";
 
 export default function useHideFn() {
     /* 暂时隐藏还没开发完的功能 */
-    const selectedMusic: Ref<Set<IMusicItem>> = ref(new Set());
-    const initSelectedMusic = (musics: IMusicItem[]) => {
-        selectedMusic.value = new Set([]);
+    const selectedMusic: Set<string> = reactive(
+        new Set(readLSValue("selected-music") ?? [])
+    );
+    const initSelectedMusic = () => {
         watchEffect(() => {
-            writeLSValue(
-                "selected-music",
-                [...selectedMusic.value].map((item) => item.id)
-            );
+            writeLSValue("selected-music", [...selectedMusic]);
         });
     };
     const displayHidden: Ref<boolean> = ref(false);
@@ -21,11 +19,11 @@ export default function useHideFn() {
             displayHidden.value = true;
         }
     };
-    const selectMusic = (music: IMusicItem) => {
-        if (selectedMusic.value.has(music)) {
-            selectedMusic.value.delete(music);
+    const selectMusic = (id: string) => {
+        if (selectedMusic.has(id)) {
+            selectedMusic.delete(id);
         } else {
-            selectedMusic.value.add(music);
+            selectedMusic.add(id);
         }
     };
     return {

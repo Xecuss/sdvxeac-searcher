@@ -27,7 +27,7 @@
             </label>
         </div>
     </Panel>
-    <StatPanel v-model:show="statOpen" :data="statMusic([...selectedMusic])" />
+    <StatPanel v-model:show="statOpen" :data="statResults" />
     <div class="search-bar">
         <input
             v-model="searchParam.keyword"
@@ -59,29 +59,23 @@
             v-for="item in results"
             :key="item.id"
             :data="item"
-            :selected="selectedMusic.has(item)"
+            :selected="selectedMusic.has(item.id)"
             :opt-enable="optEnable"
-            @select-click="selectMusic(item)"
+            @select-click="selectMusic(item.id)"
         />
     </div>
 </template>
 <script setup lang="ts">
 import MusicItem from "./MusicItem.vue";
-import { provide, reactive, Ref, ref, watchEffect } from "vue";
+import { computed, reactive, Ref, ref, watchEffect } from "vue";
 import Panel from "./FloatPanel.vue";
-import {
-    simpleDisplay,
-    readLSValue,
-    writeLSValue,
-    statMusic,
-} from "../lib/utils";
+import { simpleDisplay, readLSValue, writeLSValue } from "../lib/utils";
 import StatPanel from "./statPanel.vue";
 import useHideFn from "../hooks/hideFn";
 import { EacSearcher, ICompressedItem, ISearchParams } from "../lib/SearchCore";
 
 const filterKey = "filter2";
 
-let musics: IMusicItem[] = reactive([]);
 let searchCore: EacSearcher;
 const searchParam: ISearchParams = reactive({
     keyword: "",
@@ -92,8 +86,9 @@ const searchParam: ISearchParams = reactive({
 let results: Ref<IMusicItem[]> = ref([]);
 let realResultLength: Ref<number> = ref(0);
 const optEnable: Ref<boolean> = ref(false);
+const filterOpen = ref(false);
+const statOpen = ref(false);
 
-// 统计各个区包下的歌曲数
 let packInfo: ICompressedItem[] = reactive([]);
 const {
     selectedMusic,
@@ -111,19 +106,20 @@ const search = () => {
     results.value = realResults.slice(0, 200);
 };
 
-EacSearcher.createSearcher("./music_db_final.json").then((core) => {
-    searchCore = core;
-    core.packInfo.forEach((item) => packInfo.push(item));
-    search();
-    // initSelectedMusic(results.value);
-    changeHandle();
+const statResults = computed(() => {
+    const selectMusicList = [...selectedMusic];
+    if (!searchCore) return [];
+    const res = searchCore.statSelect(selectMusicList);
+    return res;
 });
 
-let filterOpen = ref(false);
-let statOpen = ref(false);
-// 提供出去供子组件使用
-provide("musics", musics);
-provide("packInfo", packInfo);
+EacSearcher.createSearcher("./music_db_final.json").then((core) => {
+    searchCore = core;
+    packInfo.push(...core.packInfo);
+    search();
+    initSelectedMusic();
+    changeHandle();
+});
 
 watchEffect(() => {
     search();

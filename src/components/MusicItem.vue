@@ -60,8 +60,8 @@ const selectMusic = () => {
 </script>
 <style scoped>
 .music-item {
-    width: 90%;
-    margin: 20px auto 0;
+    width: 100%;
+    margin: 20px 0 0;
     /* border: 1px solid rgba(0, 0, 0, 0.1); */
     border-radius: 8px;
     box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.07);

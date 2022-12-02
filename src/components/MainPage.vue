@@ -1,6 +1,48 @@
 <template>
-    <h1 @click="titleClickHandle">コナステ版 SDVXEG 楽曲検索</h1>
-    <Panel v-model:show="filterOpen">
+    <el-container>
+        <el-header height="40px" @click="titleClickHandle">
+            <h3 class="main-title">コナステ版 SDVXEG 楽曲検索</h3>
+        </el-header>
+        <el-main>
+            <div class="search-bar">
+                <el-input
+                    v-model="searchParam.keyword"
+                    type="text"
+                    placeholder="keyword..."
+                    :prefix-icon="Search"
+                    @input="changeHandle"
+                />
+                <!-- <div class="setting-row">
+                    <button
+                        class="filter"
+                        :class="{ active: searchParam.pack.length }"
+                        @click="filterOpen = true"
+                    >
+                        filter
+                    </button>
+                    <button
+                        v-if="selectedMusic.size && optEnable"
+                        class="filter"
+                        @click="statOpen = true"
+                    >
+                        stat
+                    </button>
+                </div> -->
+            </div>
+            <p class="total">total {{ realResultLength }} songs</p>
+            <div class="musics">
+                <MusicItem
+                    v-for="item in results"
+                    :key="item.id"
+                    :data="item"
+                    :selected="selectedMusic.has(item.id)"
+                    :opt-enable="optEnable"
+                    @select-click="selectMusic(item.id)"
+                />
+            </div>
+        </el-main>
+    </el-container>
+    <!-- <Panel v-model:show="filterOpen">
         <div class="filter-list">
             <label
                 v-for="pack in packInfo"
@@ -27,48 +69,13 @@
             </label>
         </div>
     </Panel>
-    <StatPanel v-model:show="statOpen" :data="statResults" />
-    <div class="search-bar">
-        <input
-            v-model="searchParam.keyword"
-            type="text"
-            placeholder="keyword..."
-            class="keyword"
-            @input="changeHandle"
-        />
-        <div class="setting-row">
-            <button
-                class="filter"
-                :class="{ active: searchParam.pack.length }"
-                @click="filterOpen = true"
-            >
-                filter
-            </button>
-            <button
-                v-if="selectedMusic.size && optEnable"
-                class="filter"
-                @click="statOpen = true"
-            >
-                stat
-            </button>
-        </div>
-    </div>
-    <p class="total">total {{ realResultLength }} songs</p>
-    <div class="musics">
-        <MusicItem
-            v-for="item in results"
-            :key="item.id"
-            :data="item"
-            :selected="selectedMusic.has(item.id)"
-            :opt-enable="optEnable"
-            @select-click="selectMusic(item.id)"
-        />
-    </div>
+    <StatPanel v-model:show="statOpen" :data="statResults" /> -->
 </template>
 <script setup lang="ts">
 import MusicItem from "./MusicItem.vue";
 import { computed, reactive, Ref, ref, watchEffect } from "vue";
 import Panel from "./FloatPanel.vue";
+import { Search } from "@element-plus/icons-vue";
 import { simpleDisplay, readLSValue, writeLSValue } from "../lib/utils";
 import StatPanel from "./statPanel.vue";
 import useHideFn from "../hooks/hideFn";

@@ -1,7 +1,8 @@
 <template>
     <el-container>
+        <filter-drawer v-model="filterOpen" />
         <el-header height="40px" @click="titleClickHandle">
-            <h3 class="main-title">コナステ版 SDVXEG 楽曲検索</h3>
+            <h2 class="main-title">コナステ版 SDVX 楽曲検索</h2>
         </el-header>
         <el-main>
             <div class="search-bar">
@@ -12,22 +13,14 @@
                     :prefix-icon="Search"
                     @input="changeHandle"
                 />
-                <!-- <div class="setting-row">
-                    <button
-                        class="filter"
-                        :class="{ active: searchParam.pack.length }"
-                        @click="filterOpen = true"
-                    >
-                        filter
-                    </button>
-                    <button
-                        v-if="selectedMusic.size && optEnable"
-                        class="filter"
-                        @click="statOpen = true"
-                    >
-                        stat
-                    </button>
-                </div> -->
+            </div>
+            <div class="setting-row">
+                <el-button
+                    type="primary"
+                    :icon="Filter"
+                    @click="filterClickHandle"
+                    >Filter</el-button
+                >
             </div>
             <p class="total">total {{ realResultLength }} songs</p>
             <div class="musics">
@@ -42,40 +35,12 @@
             </div>
         </el-main>
     </el-container>
-    <!-- <Panel v-model:show="filterOpen">
-        <div class="filter-list">
-            <label
-                v-for="pack in packInfo"
-                :key="pack.id"
-                class="package"
-                :class="{ active: searchParam.pack.indexOf(pack.id) !== -1 }"
-            >
-                <input
-                    v-model="searchParam.pack"
-                    class="checkbox"
-                    type="checkbox"
-                    :value="pack.id"
-                    @input="changeHandle"
-                />
-                {{ simpleDisplay(pack.name) }}
-            </label>
-            <label
-                v-if="displayHidden"
-                class="package"
-                :class="{ active: optEnable }"
-            >
-                <input v-model="optEnable" class="checkbox" type="checkbox" />
-                ？？？
-            </label>
-        </div>
-    </Panel>
-    <StatPanel v-model:show="statOpen" :data="statResults" /> -->
 </template>
 <script setup lang="ts">
 import MusicItem from "./MusicItem.vue";
+import FilterDrawer from "./FilterDrawer.vue";
 import { computed, reactive, Ref, ref, watchEffect } from "vue";
-import Panel from "./FloatPanel.vue";
-import { Search } from "@element-plus/icons-vue";
+import { Filter, Search } from "@element-plus/icons-vue";
 import { simpleDisplay, readLSValue, writeLSValue } from "../lib/utils";
 import StatPanel from "./statPanel.vue";
 import useHideFn from "../hooks/hideFn";
@@ -140,13 +105,16 @@ const changeHandle = () => {
         search();
     }, 200);
 };
+
+const filterClickHandle = () => {
+    filterOpen.value = !filterOpen.value;
+};
 </script>
 <style scoped>
 .search-bar {
     position: sticky;
     top: 0px;
     background: white;
-    padding: 10px;
     z-index: 1;
     box-sizing: border-box;
 }
@@ -158,31 +126,12 @@ const changeHandle = () => {
     display: block;
     margin: 0px auto;
 }
-.search-bar .setting-row {
-    width: 90%;
+.setting-row {
+    width: 100%;
     text-align: left;
-    margin: 5px auto 0;
+    margin: 10px auto 0;
     display: flex;
     justify-content: space-between;
-}
-.search-bar .filter {
-    color: rgba(255, 255, 255, 0.83);
-    border: none;
-    background: #49c9fb;
-    font-size: 14px;
-    line-height: 30px;
-    height: 30px;
-    border-radius: 4px;
-    padding: 0 10px;
-    display: block;
-}
-.search-bar .filter.active {
-    background-color: aquamarine;
-    color: rgba(0, 0, 0, 0.83);
-}
-.search-bar .filter.active::after {
-    content: "√";
-    margin-right: 4px;
 }
 .filter-list .package {
     display: block;
@@ -200,7 +149,8 @@ const changeHandle = () => {
     flex-wrap: wrap;
 }
 .total {
-    margin: 0 20px;
+    width: 100%;
+    margin: 10px auto 0;
     text-align: left;
 }
 </style>

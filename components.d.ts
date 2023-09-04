@@ -8,11 +8,14 @@ export {};
 declare module "@vue/runtime-core" {
     export interface GlobalComponents {
         ElAffix: typeof import("element-plus/es")["ElAffix"];
+        ElButton: typeof import("element-plus/es")["ElButton"];
         ElContainer: typeof import("element-plus/es")["ElContainer"];
+        ElDrawer: typeof import("element-plus/es")["ElDrawer"];
         ElHeader: typeof import("element-plus/es")["ElHeader"];
         ElInput: typeof import("element-plus/es")["ElInput"];
         ElMain: typeof import("element-plus/es")["ElMain"];
         ElPageHeader: typeof import("element-plus/es")["ElPageHeader"];
+        FilterDrawer: typeof import("./src/components/FilterDrawer.vue")["default"];
         FloatPanel: typeof import("./src/components/FloatPanel.vue")["default"];
         MainPage: typeof import("./src/components/MainPage.vue")["default"];
         MusicItem: typeof import("./src/components/MusicItem.vue")["default"];

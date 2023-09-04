@@ -23,16 +23,6 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
     "prettier/prettier": ["error", {"tabWidth": 4}],
-    'vue/html-indent': [
-        'error',
-        4,
-        {
-            attribute: 1,
-            baseIndent: 1,
-            closeBracket: 0,
-            alignAttributesVertically: true,
-            ignores: [],
-        },
-    ],
+    'vue/html-indent': "off"
   },
 };

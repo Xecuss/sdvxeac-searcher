@@ -1,6 +1,6 @@
 <template>
     <el-container>
-        <filter-drawer v-model="filterOpen" />
+        <filter-drawer v-model="filterOpen" :pack-info="packInfo" />
         <el-header height="40px" @click="titleClickHandle">
             <h2 class="main-title">コナステ版 SDVX 楽曲検索</h2>
         </el-header>

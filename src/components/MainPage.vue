@@ -1,6 +1,13 @@
 <template>
     <el-container>
-        <filter-drawer v-model="filterOpen" :pack-info="packInfo" />
+        <filter-drawer
+            v-model="filterOpen"
+            v-model:pack-filters="searchParam.pack"
+            v-model:cate-filters="searchParam.cate"
+            v-model:diff-filters="searchParam.difficulties"
+            :pack-info="packInfo"
+            :cate-info="cateInfo"
+        />
         <el-header height="40px" @click="titleClickHandle">
             <h2 class="main-title">コナステ版 SDVX 楽曲検索</h2>
         </el-header>
@@ -41,7 +48,7 @@ import MusicItem from "./MusicItem.vue";
 import FilterDrawer from "./FilterDrawer.vue";
 import { computed, reactive, Ref, ref, watchEffect } from "vue";
 import { Filter, Search } from "@element-plus/icons-vue";
-import { simpleDisplay, readLSValue, writeLSValue } from "../lib/utils";
+import { readLSValue, writeLSValue } from "../lib/utils";
 import StatPanel from "./statPanel.vue";
 import useHideFn from "../hooks/hideFn";
 import { EacSearcher, ICompressedItem, ISearchParams } from "../lib/SearchCore";
@@ -55,13 +62,17 @@ const searchParam: ISearchParams = reactive({
     cate: [],
     difficulties: [],
 });
-let results: Ref<IMusicItem[]> = ref([]);
-let realResultLength: Ref<number> = ref(0);
-const optEnable: Ref<boolean> = ref(false);
+const results: Ref<IMusicItem[]> = ref([]);
+const realResultLength: Ref<number> = ref(0);
+
 const filterOpen = ref(false);
+
+const optEnable: Ref<boolean> = ref(false);
 const statOpen = ref(false);
 
-let packInfo: ICompressedItem[] = reactive([]);
+const packInfo: ICompressedItem[] = reactive([]);
+const cateInfo: ICompressedItem[] = reactive([]);
+
 const {
     selectedMusic,
     selectMusic,
@@ -88,12 +99,14 @@ const statResults = computed(() => {
 EacSearcher.createSearcher("./music_db_final.json").then((core) => {
     searchCore = core;
     packInfo.push(...core.packInfo);
+    cateInfo.push(...core.cateInfo);
     search();
     initSelectedMusic();
     changeHandle();
 });
 
 watchEffect(() => {
+    console.log(">>>> do Search");
     search();
     writeLSValue(filterKey, searchParam.pack);
 });

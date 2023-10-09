@@ -28,6 +28,7 @@ export const cateFilter: Filter = (from, { cate }) => {
 };
 // 难度过滤器
 export const diffFilter: Filter = (from, { difficulties }) => {
+    console.log(">>>> searchDiff", difficulties);
     if (!difficulties.length) return from;
 
     const diffSet = new Set(difficulties);

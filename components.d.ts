@@ -21,6 +21,7 @@ declare module '@vue/runtime-core' {
     ElPageHeader: typeof import("element-plus/es")["ElPageHeader"]
     ElSelect: typeof import('element-plus/es')['ElSelect']
     ElSelectDropdown: typeof import('element-plus/es')['ElSelectDropdown']
+    ElSlider: typeof import('element-plus/es')['ElSlider']
     FilterDrawer: typeof import('./src/components/FilterDrawer.vue')['default']
     FloatPanel: typeof import('./src/components/FloatPanel.vue')['default']
     MainPage: typeof import('./src/components/MainPage.vue')['default']

@@ -18,7 +18,6 @@
                     type="text"
                     placeholder="keyword..."
                     :prefix-icon="Search"
-                    @input="changeHandle"
                 />
             </div>
             <div class="setting-row">
@@ -46,12 +45,13 @@
 <script setup lang="ts">
 import MusicItem from "./MusicItem.vue";
 import FilterDrawer from "./FilterDrawer.vue";
-import { computed, reactive, Ref, ref, watchEffect } from "vue";
+import { computed, reactive, Ref, ref, watch } from "vue";
 import { Filter, Search } from "@element-plus/icons-vue";
 import { readLSValue, writeLSValue } from "../lib/utils";
 import StatPanel from "./statPanel.vue";
 import useHideFn from "../hooks/hideFn";
 import { EacSearcher, ICompressedItem, ISearchParams } from "../lib/SearchCore";
+import debounce from "lodash/debounce";
 
 const filterKey = "filter2";
 
@@ -102,14 +102,14 @@ EacSearcher.createSearcher("./music_db_final.json").then((core) => {
     cateInfo.push(...core.cateInfo);
     search();
     initSelectedMusic();
-    changeHandle();
 });
 
-watchEffect(() => {
-    console.log(">>>> do Search");
-    search();
-    writeLSValue(filterKey, searchParam.pack);
-});
+watch(
+    searchParam,
+    debounce(() => {
+        search();
+    }, 200)
+);
 
 let timer: number;
 const changeHandle = () => {

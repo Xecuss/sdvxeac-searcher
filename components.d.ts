@@ -7,9 +7,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    ElAffix: typeof import("element-plus/es")["ElAffix"]
     ElButton: typeof import('element-plus/es')['ElButton']
-    ElCascaderPanel: typeof import('element-plus/es')['ElCascaderPanel']
     ElCollapse: typeof import('element-plus/es')['ElCollapse']
     ElCollapseItem: typeof import('element-plus/es')['ElCollapseItem']
     ElContainer: typeof import('element-plus/es')['ElContainer']
@@ -17,11 +15,6 @@ declare module '@vue/runtime-core' {
     ElHeader: typeof import('element-plus/es')['ElHeader']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElMain: typeof import('element-plus/es')['ElMain']
-    ElOption: typeof import('element-plus/es')['ElOption']
-    ElPageHeader: typeof import("element-plus/es")["ElPageHeader"]
-    ElSelect: typeof import('element-plus/es')['ElSelect']
-    ElSelectDropdown: typeof import('element-plus/es')['ElSelectDropdown']
-    ElSlider: typeof import('element-plus/es')['ElSlider']
     FilterDrawer: typeof import('./src/components/FilterDrawer.vue')['default']
     FloatPanel: typeof import('./src/components/FloatPanel.vue')['default']
     MainPage: typeof import('./src/components/MainPage.vue')['default']

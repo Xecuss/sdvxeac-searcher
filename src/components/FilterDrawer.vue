@@ -9,17 +9,11 @@
                     @update:model-value="(v) => $emit('update:packFilters', v)"
             /></el-collapse-item>
             <el-collapse-item title="Difficulty">
-                <div :style="{ margin: '15px' }">
-                    <el-slider
-                        range
-                        :max="20"
-                        :min="1"
-                        :step="1"
-                        show-stops
-                        :model-value="diffRange"
-                        @update:model-value="diffChangeHandle"
-                    />
-                </div>
+                <select-list
+                    :model-value="diffFilters"
+                    :options="diffFilterList"
+                    @update:model-value="(v) => $emit('update:diffFilters', v)"
+                />
             </el-collapse-item>
             <el-collapse-item title="Category">
                 <select-list
@@ -60,27 +54,12 @@ const convert2SelectItem = (rawList: ICompressedItem[]) =>
 
 const packFilterList = computed(() => convert2SelectItem(props.packInfo));
 const cateFilterList = computed(() => convert2SelectItem(props.cateInfo));
-
-const diffRange = computed(() => {
-    if (!props.diffFilters.length) return [1, 20];
-
-    const range = [Infinity, 0];
-    props.diffFilters.forEach((item) => {
-        if (item < range[0]) range[0] = item;
-        else if (item > range[1]) range[1] = item;
-    });
-    return range;
-});
-
-const diffChangeHandle = ([s, e]: any) => {
-    console.log(s, e);
-    emit(
-        "update:diffFilters",
-        Array(e - s + 1)
-            .fill(s)
-            .map((item, idx) => idx + item)
-    );
-};
+const diffFilterList = Array(20)
+    .fill(1)
+    .map((item, idx) => ({
+        value: idx + 1,
+        label: `Lv.${idx + 1}`,
+    }));
 </script>
 <style scoped>
 .header {

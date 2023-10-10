@@ -3,20 +3,22 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vue-tsc --noEmit --skipLibCheck && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.10",
     "element-plus": "^2.2.19",
     "fuse.js": "^6.5.3",
-    "vue": "^3.2.25",
+    "lodash": "^4.17.21",
+    "vue": "^3.3.4",
     "vue3-lazy": "^1.0.0-alpha.1"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.199",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",
-    "@vitejs/plugin-vue": "^2.0.0",
+    "@vitejs/plugin-vue": "^2.3.4",
     "eslint": "^8.25.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -27,6 +29,6 @@
     "unplugin-vue-components": "^0.22.8",
     "vite": "^2.7.2",
     "vue-eslint-parser": "^9.1.0",
-    "vue-tsc": "^1.0.0"
+    "vue-tsc": "^1.8.18"
   }
 }

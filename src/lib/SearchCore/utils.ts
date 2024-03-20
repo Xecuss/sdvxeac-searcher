@@ -6,6 +6,8 @@ import {
     IStatResult,
 } from "./type";
 
+window.DATA_VERSION = String(currentVersion);
+
 export const loadMusicsWithCache = async (url: string, storeKey: string) => {
     const storageRes = localStorage.getItem(storeKey);
     if (storageRes) {

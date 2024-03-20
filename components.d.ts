@@ -22,4 +22,7 @@ declare module '@vue/runtime-core' {
     SelectList: typeof import('./src/components/SelectList.vue')['default']
     StatPanel: typeof import('./src/components/statPanel.vue')['default']
   }
+  export interface ComponentCustomProperties {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
+  }
 }

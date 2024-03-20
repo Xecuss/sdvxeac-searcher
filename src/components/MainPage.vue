@@ -28,7 +28,11 @@
                     >Filter</el-button
                 >
             </div>
-            <p class="total">total {{ realResultLength }} songs</p>
+            <p class="total">
+                <span>total {{ realResultLength }} songs</span>
+                <span>update on {{ dataVersion }}</span>
+            </p>
+            <div v-loading.fullscreen.lock="isLoading" class="loading" />
             <div class="musics">
                 <MusicItem
                     v-for="item in results"
@@ -64,6 +68,8 @@ const searchParam: ISearchParams = reactive({
 });
 const results: Ref<IMusicItem[]> = ref([]);
 const realResultLength: Ref<number> = ref(0);
+const dataVersion = window.DATA_VERSION.slice(0, -4);
+const isLoading = ref(true);
 
 const filterOpen = ref(false);
 
@@ -102,6 +108,7 @@ EacSearcher.createSearcher("./music_db_final.json").then((core) => {
     cateInfo.push(...core.cateInfo);
     search();
     initSelectedMusic();
+    isLoading.value = false;
 });
 
 watch(
@@ -164,6 +171,7 @@ const filterClickHandle = () => {
 .total {
     width: 100%;
     margin: 10px auto 0;
-    text-align: left;
+    display: flex;
+    justify-content: space-between;
 }
 </style>

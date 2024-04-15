@@ -9,12 +9,11 @@ import {
     Filter,
     ICompressedItem,
     ICompressedMusicItem,
+    ICoreMusicItem,
     IMusicData,
     ISearchParams,
 } from "./type";
 import { loadMusicsWithCache, statMusics } from "./utils";
-
-const localStoreKey = "x-sdvx-songdb";
 
 const diffMap: { [k: string]: string } = {
     0: "NOV",
@@ -32,7 +31,7 @@ export class EacSearcher {
     private packIdMap: Map<number, ICompressedItem> = new Map();
     private cateIdMap: Map<number, ICompressedItem> = new Map();
     private musicsIdMap: Map<string, ICompressedMusicItem> = new Map();
-    private musics: ICompressedMusicItem[] = [];
+    private musics: ICoreMusicItem[] = [];
     private filter: Filter = (from) => from;
     private __raw: IMusicData;
 
@@ -48,7 +47,7 @@ export class EacSearcher {
     }
 
     constructor(musicData: IMusicData, filters?: Filter[]) {
-        this.musics = musicData.musics;
+        this.musics = musicData.musics.map((item) => ({ ...item, alias: [] }));
         this.__raw = musicData;
         musicData.packInfo.forEach((item) => this.packIdMap.set(item.id, item));
         musicData.cateInfo.forEach((item) => this.cateIdMap.set(item.id, item));
@@ -91,7 +90,7 @@ export class EacSearcher {
     }
 
     static async createSearcher(url: string) {
-        const musicData = await loadMusicsWithCache(url, localStoreKey);
+        const musicData = await loadMusicsWithCache(url);
         const useFilter = [packFilter, cateFilter, diffFilter, keywordFilter];
         return new EacSearcher(musicData, useFilter);
     }

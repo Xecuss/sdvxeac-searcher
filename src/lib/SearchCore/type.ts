@@ -13,13 +13,20 @@ export interface ICompressedMusicItem {
     package: number;
 }
 
+export interface ICoreMusicItem extends ICompressedMusicItem {
+    alias: string[];
+}
+
 export interface ICompressedItem {
     id: number;
     name: string;
     count: number;
 }
-export interface IMusicData {
+
+export interface ICacheableData {
     version: number;
+}
+export interface IMusicData extends ICacheableData {
     packInfo: ICompressedItem[];
     cateInfo: ICompressedItem[];
     musics: ICompressedMusicItem[];

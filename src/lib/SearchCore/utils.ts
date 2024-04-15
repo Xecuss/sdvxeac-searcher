@@ -1,26 +1,34 @@
 import { version as currentVersion } from "../../../public/music_db_final.json";
 import {
+    ICacheableData,
     ICompressedItem,
     ICompressedMusicItem,
     IMusicData,
     IStatResult,
 } from "./type";
 
+const MUSIC_DATA_KEY = "x-sdvx-songdb";
 window.DATA_VERSION = String(currentVersion);
 
-export const loadMusicsWithCache = async (url: string, storeKey: string) => {
-    const storageRes = localStorage.getItem(storeKey);
-    if (storageRes) {
-        const data = JSON.parse(storageRes) as IMusicData;
-        console.log(data.version, currentVersion);
-        if (data.version >= currentVersion) return data;
-    }
-
-    const fetchRes = await fetch(`${url}?r=${new Date().valueOf()}`);
-    const res = (await fetchRes.json()) as IMusicData;
-    localStorage.setItem(storeKey, JSON.stringify(res));
-    return res;
+export const loadDataWithCacheFactory = <T extends ICacheableData>(
+    storeKey: string
+) => {
+    return async (url: string) => {
+        const storageRes = localStorage.getItem(storeKey);
+        if (storageRes) {
+            const data = JSON.parse(storageRes) as T;
+            console.log(data.version, currentVersion);
+            if (data.version >= currentVersion) return data;
+        }
+        const fetchRes = await fetch(`${url}?r=${new Date().valueOf()}`);
+        const res = (await fetchRes.json()) as T;
+        localStorage.setItem(storeKey, JSON.stringify(res));
+        return res;
+    };
 };
+
+export const loadMusicsWithCache =
+    loadDataWithCacheFactory<IMusicData>(MUSIC_DATA_KEY);
 
 export function statMusics(
     musics: ICompressedMusicItem[],

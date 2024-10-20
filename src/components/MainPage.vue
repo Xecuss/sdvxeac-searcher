@@ -167,6 +167,7 @@ const filterClickHandle = () => {
 .musics {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-around;
 }
 .total {
     width: 100%;

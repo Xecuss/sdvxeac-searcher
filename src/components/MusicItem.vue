@@ -137,6 +137,10 @@ const selectMusic = () => {
     background-color: rgba(238, 101, 229, 0.3);
     border: 1px solid #ee65e5;
 }
+.difficulties .difficulty.XCD {
+    background-color: rgba(20, 158, 255, 0.3);
+    border: 1px solid #187fff;
+}
 .music-item .categorys {
     display: flex;
     justify-content: center;
